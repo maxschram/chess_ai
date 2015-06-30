@@ -17,3 +17,10 @@ class SlidingPiece < Piece
     raise "not yet implemented"
   end
 end
+
+class SteppingPiece < Piece
+
+  def moves
+    raise "not yet implemented"
+  end
+end
