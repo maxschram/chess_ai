@@ -13,9 +13,10 @@ class Board
     self[start] = EmptySquare.new
   end
 
-  private
+  def length
+    grid.length
+  end
 
-  attr_accessor :grid
   def [](pos)
     row, col = pos
     grid[row][col]
@@ -26,6 +27,9 @@ class Board
     grid[row][col] = val
   end
 
+  private
+
+  attr_accessor :grid
 end
 
 class EmptySquare
