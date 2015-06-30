@@ -75,7 +75,7 @@ end
 class Queen < SlidingPiece
 
   def move_dirs
-    raise "not yet implemented"
+    [1, -1].repeated_permutation(2).to_a.concat([[1, 0], [0, 1], [-1, 0], [0, -1]])
   end
 end
 
