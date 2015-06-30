@@ -45,3 +45,6 @@ class Queen < SlidingPiece
     raise "note yet implemented"
   end
 end
+
+class Knight < SteppingPiece
+end
