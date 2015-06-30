@@ -31,3 +31,10 @@ class Bishop < SlidingPiece
     raise "note yet implemented"
   end
 end
+
+class Rook < SlidingPiece
+
+  def move_dirs
+    raise "note yet implemented"
+  end
+end
