@@ -24,3 +24,10 @@ class SteppingPiece < Piece
     raise "not yet implemented"
   end
 end
+
+class Bishop < SlidingPiece
+
+  def move_dirs
+    raise "note yet implemented"
+  end
+end
