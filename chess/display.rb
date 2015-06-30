@@ -1,6 +1,6 @@
 class Display
 
-  attr_accessor :cursor
+  attr_accessor :cursor, :game
 
   MOVEMENTS = {"w" => [-1, 0],
                "a" => [0, -1],
@@ -8,9 +8,10 @@ class Display
                "d" => [0, 1],
                "\r"=> [0, 0]}
 
-  def initialize(board)
+  def initialize(board, game)
     @cursor = [0,0]
     @board = board
+    @game = game
   end
 
   def receive_input(char)
@@ -30,6 +31,17 @@ class Display
     puts "Use WASD for movement, Enter to select or place a piece, Q for quit"
   end
 
+  def render_debug
+    debug_msg = ""
+    debug_msg += "Cursor position: #{cursor}\n"
+    debug_msg += "Highlighted space position: #{board[cursor].pos}\n"
+    debug_msg += "Highlighted space empty?: #{board[cursor].empty?}\n"
+    debug_msg += "Selected position: #{game.selected_pos}\n"
+    if game.selected_pos
+      debug_msg += "Selected position moves: #{board[game.selected_pos].moves}\n"
+    end
+    puts debug_msg
+  end
   private
 
   attr_reader :board

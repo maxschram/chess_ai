@@ -1,7 +1,8 @@
 class Board
 
   def initialize
-    @grid = Array.new(8) { Array.new(8) {EmptySquare.new} }
+    @grid = Array.new(8) { Array.new(8) }
+    populate_squares
     populate(:white)
     populate(:black)
   end
@@ -52,15 +53,34 @@ class Board
     (0..7).each { |col| grid[pawn_row][col] = Pawn.new([pawn_row, col], self, color) }
 
   end
+
+  def populate_squares
+    (0...length).each do |row_idx|
+      (0...length).each do |col_idx|
+        grid[row_idx][col_idx] = EmptySquare.new([row_idx, col_idx])
+      end
+    end
+  end
 end
 
 class EmptySquare
+
+  attr_reader :pos
+
+  def initialize(pos)
+    @pos = pos
+  end
 
   def moves
     []
   end
 
+  def empty?
+    true
+  end
+
   def to_s
     " "
   end
+
 end

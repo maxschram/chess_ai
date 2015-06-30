@@ -1,6 +1,6 @@
 class Piece
 
-  attr_reader :color
+  attr_reader :color, :pos
 
   PIECE_CODES = {
     white: {
@@ -24,10 +24,15 @@ class Piece
     @pos = pos
     @board = board
     @color = color
+
   end
 
   def moves
     raise "not yet implemented"
+  end
+
+  def empty?
+    false
   end
 
   def to_s
