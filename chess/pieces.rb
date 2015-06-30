@@ -32,7 +32,7 @@ class Piece
 
   def to_s
     piece_name = self.class.to_s.downcase.to_sym
-    PIECE_CODES[color][piece_name]
+    PIECE_CODES[color][piece_name].colorize(color)
   end
 
   private

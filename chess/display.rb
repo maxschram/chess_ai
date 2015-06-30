@@ -42,9 +42,9 @@ class Display
     if pos == cursor
       background_color = :yellow
     elsif square_odd?(pos)
-      background_color = :black
+      background_color = :red
     else
-      background_color = :white
+      background_color = :green
     end
 
     " #{board[pos]} ".colorize(background: background_color)

@@ -2,6 +2,8 @@ class Board
 
   def initialize
     @grid = Array.new(8) { Array.new(8) {EmptySquare.new} }
+    populate(:white)
+    populate(:black)
   end
 
   def in_check?(color)
@@ -34,6 +36,22 @@ class Board
   private
 
   attr_accessor :grid
+
+  def populate(color)
+    row = (color == :white ? 7 : 0)
+    pawn_row = (color == :white ? 6 : 1)
+    grid[row][0] = Rook.new([row,0], self, color)
+    grid[row][7] = Rook.new([row,7], self, color)
+    grid[row][1] = Knight.new([row,1], self, color)
+    grid[row][6] = Knight.new([row,6], self, color)
+    grid[row][2] = Bishop.new([row,2], self, color)
+    grid[row][5] = Bishop.new([row,5], self, color)
+    grid[row][3] = Queen.new([row,3], self, color)
+    grid[row][4] = King.new([row,4], self, color)
+
+    (0..7).each { |col| grid[pawn_row][col] = Pawn.new([pawn_row, col], self, color) }
+
+  end
 end
 
 class EmptySquare
