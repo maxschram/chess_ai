@@ -68,7 +68,7 @@ end
 class Rook < SlidingPiece
 
   def move_dirs
-    raise "not yet implemented"
+    [[1, 0], [0, 1], [-1, 0], [0, -1]]
   end
 end
 
