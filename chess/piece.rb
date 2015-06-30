@@ -38,3 +38,10 @@ class Rook < SlidingPiece
     raise "note yet implemented"
   end
 end
+
+class Queen < SlidingPiece
+
+  def move_dirs
+    raise "note yet implemented"
+  end
+end
