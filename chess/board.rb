@@ -27,6 +27,10 @@ class Board
     grid[row][col] = val
   end
 
+  def on_board?(pos)
+    pos.all? {|dim| dim.between?(0, length - 1)}
+  end
+
   private
 
   attr_accessor :grid
@@ -38,4 +42,7 @@ class EmptySquare
     []
   end
 
+  def to_s
+    " "
+  end
 end

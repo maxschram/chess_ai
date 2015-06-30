@@ -1,5 +1,25 @@
 class Piece
 
+  attr_reader :color
+
+  PIECE_CODES = {
+    white: {
+      king: "\u2654",
+      queen: "\u2655",
+      rook: "\u2656",
+      bishop: "\u2657",
+      knight: "\u2658",
+      pawn: "\u2659"
+    },
+    black: {
+      king: "\u265A",
+      queen: "\u265B",
+      rook: "\u265C",
+      bishop: "\u265D",
+      knight: "\u265E",
+      pawn: "\u265F"
+    }
+  }
   def initialize(pos, board, color)
     @pos = pos
     @board = board
@@ -9,6 +29,14 @@ class Piece
   def moves
     raise "not yet implemented"
   end
+
+  def to_s
+    piece_name = self.class.to_s.downcase.to_sym
+    PIECE_CODES[color][piece_name]
+  end
+
+  private
+
 end
 
 class SlidingPiece < Piece
@@ -28,21 +56,21 @@ end
 class Bishop < SlidingPiece
 
   def move_dirs
-    raise "note yet implemented"
+    raise "not yet implemented"
   end
 end
 
 class Rook < SlidingPiece
 
   def move_dirs
-    raise "note yet implemented"
+    raise "not yet implemented"
   end
 end
 
 class Queen < SlidingPiece
 
   def move_dirs
-    raise "note yet implemented"
+    raise "not yet implemented"
   end
 end
 
