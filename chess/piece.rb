@@ -51,3 +51,6 @@ end
 
 class King < SteppingPiece
 end
+
+class Pawn < Piece
+end
