@@ -66,7 +66,6 @@ class Board
     grid[row][3] = Queen.new([row,3], self, color)
     grid[row][4] = King.new([row,4], self, color)
     (0..7).each { |col| grid[pawn_row][col] = Pawn.new([pawn_row, col], self, color) }
-    grid[2][3] = Pawn.new([2,3], self, :white)
   end
 
   def populate_squares
