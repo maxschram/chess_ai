@@ -34,6 +34,18 @@ class Board
     pos.all? {|dim| dim.between?(0, length - 1)}
   end
 
+  def valid_move?(piece, pos)
+    on_board?(pos) && (self[pos].empty? || piece.color != self[pos].color)
+  end
+
+  def valid_take?(piece, pos)
+    on_board?(pos) && !self[pos].empty? && piece.color != self[pos].color
+  end
+
+  def move_pos(pos, diff)
+    pos.zip(diff).map { |dim| dim.reduce(:+) }
+  end
+
   private
 
   attr_accessor :grid
@@ -51,6 +63,7 @@ class Board
     grid[row][4] = King.new([row,4], self, color)
 
     (0..7).each { |col| grid[pawn_row][col] = Pawn.new([pawn_row, col], self, color) }
+    # grid[2][3] = Pawn.new([2,3], self, color)
 
   end
 
@@ -61,6 +74,7 @@ class Board
       end
     end
   end
+
 end
 
 class EmptySquare

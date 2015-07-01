@@ -3,10 +3,11 @@ require_relative 'board'
 require_relative 'pieces'
 require 'colorize'
 require 'io/console'
+require 'byebug'
 
 class Game
 
-  attr_reader :display
+  attr_reader :display, :board
   attr_accessor :selected_pos
 
   def initialize

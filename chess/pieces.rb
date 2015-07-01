@@ -1,6 +1,6 @@
 class Piece
 
-  attr_reader :color, :pos
+  attr_reader :color, :pos, :board
 
   PIECE_CODES = {
     white: {
@@ -47,7 +47,21 @@ end
 class SlidingPiece < Piece
 
   def moves
-    raise "not yet implemented"
+    res = []
+    move_dirs.each { |dir| res += slide(dir) }
+    res
+  end
+
+  def slide(dir)
+    res = []
+    (1..7).to_a.each do |multiplier|
+      diff = dir.map { |dim| dim * multiplier}
+      next_pos = board.move_pos(pos, diff)
+      break unless board.valid_move?(self, next_pos)
+      res << next_pos
+      break if board.valid_take?(self, next_pos)
+    end
+    res
   end
 end
 
