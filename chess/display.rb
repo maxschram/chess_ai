@@ -51,15 +51,17 @@ class Display
   end
 
   def square_string(pos)
+    piece = board[pos].to_s
+    piece = piece.colorize(:yellow) if game.previously_selected_pos == pos
     if pos == cursor
       background_color = :yellow
     elsif square_odd?(pos)
       background_color = :red
     else
-      background_color = :green
+      background_color = :blue
     end
 
-    " #{board[pos]} ".colorize(background: background_color)
+    " #{piece} ".colorize(background: background_color)
   end
 
   def update_cursor_pos(pos)

@@ -8,13 +8,14 @@ require 'byebug'
 class Game
 
   attr_reader :display, :board
-  attr_accessor :selected_pos
+  attr_accessor :selected_pos, :previously_selected_pos
 
   def initialize
     @board = Board.new
     @display = Display.new(@board, self)
     @debug = true
     @selected_pos = nil
+    @previously_selected_pos = nil
   end
 
 
@@ -24,9 +25,35 @@ class Game
       display.render_debug if debug
       input = $stdin.getch
       break if input == 'q'
-      self.selected_pos = display.cursor if input == "\r"
+      position_selected if input == "\r"
       display.receive_input(input)
     end
+  end
+
+  def position_selected
+    self.selected_pos = display.cursor
+    if previously_selected_pos
+      try_to_move_piece
+    else
+      update_previously_selected_position
+    end
+  end
+
+  def try_to_move_piece
+    piece = board[previously_selected_pos]
+    if previously_selected_pos == selected_pos
+      self.previously_selected_pos = nil
+    end
+
+    if piece.valid_move?(selected_pos)
+      board.move(previously_selected_pos, selected_pos)
+      self.previously_selected_pos = nil
+    end
+  end
+
+  def update_previously_selected_position
+    square = board[selected_pos]
+    self.previously_selected_pos = selected_pos unless square.empty?
   end
 
   def over?

@@ -13,7 +13,8 @@ class Board
 
   def move(start, end_pos)
     self[end_pos] = self[start]
-    self[start] = EmptySquare.new
+    self[end_pos].move(end_pos)
+    self[start] = EmptySquare.new(start)
   end
 
   def length
