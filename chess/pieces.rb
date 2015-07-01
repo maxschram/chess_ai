@@ -1,6 +1,7 @@
 class Piece
 
   attr_reader :color, :pos, :board
+  attr_accessor :moved
 
   PIECE_CODES = {
     white: {
@@ -24,7 +25,7 @@ class Piece
     @pos = pos
     @board = board
     @color = color
-
+    @moved = false
   end
 
   def moves
@@ -110,4 +111,54 @@ class King < SteppingPiece
 end
 
 class Pawn < Piece
+
+  ADVANCE_1 = [1,0]
+  ADVANCE_2 = [2,0]
+  TAKE = [[1,1], [1, -1]]
+  def moves
+    res = []
+    move_diffs.each do |move|
+      next_pos = board.move_pos(pos, move)
+      break unless board.valid_empty_move?(self, next_pos)
+      res << next_pos
+    end
+
+    take_diffs.each do |move|
+      next_pos = board.move_pos(pos, move)
+      res << next_pos if board.valid_take?(self, next_pos)
+    end
+    res
+  end
+
+  def move_diffs
+    if color == :white
+      up_diffs
+    else
+      down_diffs
+    end
+  end
+
+  def take_diffs
+    if color == :white
+      up_take_diffs
+    else
+      down_take_diffs
+    end
+  end
+
+  def down_diffs
+    moved ? [ADVANCE_1] : [ADVANCE_1,  ADVANCE_2]
+  end
+
+  def up_diffs
+    down_diffs.map { |diff| [diff.first * -1, diff.last * -1]}
+  end
+
+  def down_take_diffs
+    TAKE
+  end
+
+  def up_take_diffs
+    down_take_diffs.map { |diff| [diff.first * -1, diff.last * -1]}
+  end
 end
