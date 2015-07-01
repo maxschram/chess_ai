@@ -22,16 +22,21 @@ class Display
   end
 
   def render
+    board = ''
+    instructions = ''
     current_player = game.players[game.current_player]
     system('clear')
     (0...@board.length).each do |row|
       (0...@board.length).each do |col|
-        print square_string([row, col])
+        board << square_string([row, col])
       end
-      print "\n"
+      board << "\n"
     end
-    puts "Use WASD for movement, Enter to select or place a piece, Q for quit\n"
-    puts "Current player: #{current_player.color.to_s.upcase.colorize(current_player.color)}".on_green
+    instructions << "\nUse WASD for movement, Enter to select or place a piece, Q for quit\n"
+    instructions << "Current player: #{current_player.color.to_s.upcase.colorize(current_player.color)}".on_green
+    instructions << " " * 46
+    puts board
+    puts instructions.colorize(background: :magenta)
   end
 
   def debug_console
