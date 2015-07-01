@@ -1,6 +1,7 @@
 class Display
 
   attr_accessor :cursor, :game
+  attr_reader :board
 
   MOVEMENTS = {"w" => [-1, 0],
                "a" => [0, -1],
@@ -31,7 +32,13 @@ class Display
     puts "Use WASD for movement, Enter to select or place a piece, Q for quit"
   end
 
-  def render_debug
+  def debug_console
+    print "\nEnter a command: \n>"
+    command = gets.chomp
+    puts eval(command)
+  end
+
+  def render_debug(options = {})
     debug_msg = ""
     debug_msg += "Cursor position: #{cursor}\n"
     debug_msg += "Highlighted space position: #{board[cursor].pos}\n"
@@ -40,11 +47,19 @@ class Display
     if game.selected_pos
       debug_msg += "Selected position moves: #{board[game.selected_pos].moves}\n"
     end
+    debug_msg += "Piece at highlighted position: #{board[cursor].class}\n" if board[cursor]
+    debug_msg += "Highlighted piece color #{board[cursor].color}\n" unless board[cursor].empty?
+    debug_msg += "Piece at selected position: #{board[game.selected_pos].class}\n" if game.selected_pos && board[game.selected_pos]
+    debug_msg += "Black king at #{board.find_king(:black).pos}\n"
+    debug_msg += "White king at #{board.find_king(:white).pos}\n"
+    debug_msg += "White in check #{board.in_check?(:white)}\n"
+    debug_msg += "Black in check #{board.in_check?(:black)}\n"
+    debug_msg += "Black checkmate #{board.checkmate?(:black)}\n"
+    debug_msg += "White checkmate #{board.checkmate?(:white)}\n"
     puts debug_msg
+    debug_console if options[:console]
   end
   private
-
-  attr_reader :board
 
   def square_odd?(pos)
     pos.reduce(:+).odd?

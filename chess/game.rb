@@ -6,7 +6,6 @@ require 'io/console'
 require 'byebug'
 
 class Game
-
   attr_reader :display, :board
   attr_accessor :selected_pos, :previously_selected_pos
 
@@ -20,11 +19,14 @@ class Game
 
 
   def run
+    debug_console = false
     until over?
       display.render
-      display.render_debug if debug
+      display.render_debug(console: debug_console) if debug
+      debug_console = false
       input = $stdin.getch
       break if input == 'q'
+      debug_console = true if input == 'c'
       position_selected if input == "\r"
       display.receive_input(input)
     end
@@ -43,10 +45,12 @@ class Game
     piece = board[previously_selected_pos]
     if previously_selected_pos == selected_pos
       self.previously_selected_pos = nil
+      return
     end
 
-    if piece.valid_move?(selected_pos)
+    if !piece.empty? && board.valid_move?(piece, selected_pos) && piece.valid_move?(selected_pos)
       board.move(previously_selected_pos, selected_pos)
+      piece.moved!
       self.previously_selected_pos = nil
     end
   end

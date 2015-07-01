@@ -1,3 +1,5 @@
+require 'byebug'
+
 class Board
 
   def initialize
@@ -9,12 +11,6 @@ class Board
 
   def in_check?(color)
     raise "not yet implemented"
-  end
-
-  def move(start, end_pos)
-    self[end_pos] = self[start]
-    self[end_pos].move(end_pos)
-    self[start] = EmptySquare.new(start)
   end
 
   def length
@@ -35,8 +31,86 @@ class Board
     pos.all? {|dim| dim.between?(0, length - 1)}
   end
 
+  def in_check?(color)
+    king = find_king(color)
+    king_pos = king.pos
+    other_color_moves = total_moves_other_color(color)
+    other_color_moves.include?(king_pos)
+  end
+
+  def find_king(color)
+    all_pieces_of_color(color).find { |piece| piece.is_king? }
+  end
+
+  def total_moves(color)
+    res = []
+    all_pieces_of_color(color).each { |piece| res += valid_moves_piece(piece) }
+    res
+  end
+
+  def total_moves_other_color(color)
+    res = []
+    color = other_color(color)
+    all_pieces_of_color(color).each { |piece| res += valid_moves_piece_other_color(piece)}
+    res
+  end
+
+  def valid_moves_piece(piece)
+    piece.moves.select { |move| valid_move?(piece, move)}
+  end
+
+  def valid_moves_piece_other_color(piece)
+    piece.moves.select { |move| can_occupy?(piece, move)}
+  end
+
+  def all_pieces_of_color(color)
+    grid.flatten.select { |piece| !piece.empty? && piece.color == color }
+  end
+
+  def other_color(color)
+    color == :white ? :black : :white
+  end
+
+  def move(start, end_pos)
+    self[end_pos] = self[start]
+    self[end_pos].move(end_pos)
+    self[start] = EmptySquare.new(start)
+  end
+
+  def move_puts_in_check?(piece, end_pos)
+    taken_piece = self[end_pos]
+    start_pos = piece.pos
+    move(piece.pos, end_pos)
+    check = in_check?(piece.color)
+    # place_piece(piece, old_piece_pos)
+    # place_piece(taken_piece, move)
+    undo_move(piece, taken_piece, start_pos, end_pos)
+    check
+  end
+
+  def undo_move(piece, old_piece, start_pos, end_pos)
+    self[start_pos] = piece
+    piece.move(start_pos)
+    self[end_pos] = old_piece
+    old_piece.move(end_pos)
+  end
+
+  # def make_move(piece, old_piece, start_pos, end_pos)
+  #   self[start_pos] = EmptySquare.new(start_pos)
+  #   old_piece
+  # end
+
+  def can_occupy?(piece, pos)
+    on_board?(pos) &&
+      (self[pos].empty? || piece.color != self[pos].color)
+  end
+
+  def checkmate?(color)
+    total_moves(color).empty?
+  end
+
   def valid_move?(piece, pos)
-    on_board?(pos) && (self[pos].empty? || piece.color != self[pos].color)
+    can_occupy?(piece, pos) && !move_puts_in_check?(piece, pos)
   end
 
   def valid_empty_move?(piece, pos)
@@ -54,6 +128,11 @@ class Board
   private
 
   attr_accessor :grid
+
+  def place_piece(piece, pos)
+    self[pos] = piece
+    self[pos].move(pos)
+  end
 
   def populate(color)
     row = (color == :white ? 7 : 0)
@@ -80,8 +159,7 @@ class Board
 end
 
 class EmptySquare
-
-  attr_reader :pos
+  attr_accessor :pos
 
   def initialize(pos)
     @pos = pos
@@ -95,8 +173,19 @@ class EmptySquare
     true
   end
 
+  def inspect
+    " "
+  end
+
   def to_s
     " "
   end
 
+  def is_king?
+    false
+  end
+
+  def move(pos)
+    self.pos = pos
+  end
 end

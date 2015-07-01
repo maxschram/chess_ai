@@ -1,5 +1,4 @@
 class Piece
-
   attr_reader :color, :board
   attr_accessor :moved, :pos
 
@@ -22,12 +21,23 @@ class Piece
     moves.include?(pos)
   end
 
+  def inspect
+    "#{color} #{self.class}"
+  end
+
+  def is_king?
+    false
+  end
+
   def moves
     raise "not yet implemented"
   end
 
   def move(pos)
-    self.pos = pos
+    self.pos = pos.dup
+  end
+
+  def moved!
     self.moved = true
   end
 
@@ -45,7 +55,6 @@ class Piece
 end
 
 class SlidingPiece < Piece
-
   def moves
     res = []
     move_dirs.each { |dir| res += slide(dir) }
@@ -57,7 +66,7 @@ class SlidingPiece < Piece
     (1..7).to_a.each do |multiplier|
       diff = dir.map { |dim| dim * multiplier}
       next_pos = board.move_pos(pos, diff)
-      break unless board.valid_move?(self, next_pos)
+      break unless board.can_occupy?(self, next_pos)
       res << next_pos
       break if board.valid_take?(self, next_pos)
     end
@@ -66,26 +75,23 @@ class SlidingPiece < Piece
 end
 
 class SteppingPiece < Piece
-
   def moves
     res = []
     steps.each do |step|
       next_pos = board.move_pos(pos, step)
-      res << next_pos if board.valid_move?(self, next_pos)
+      res << next_pos if board.can_occupy?(self, next_pos)
     end
     res
   end
 end
 
 class Bishop < SlidingPiece
-
   def move_dirs
     [1, -1].repeated_permutation(2).to_a
   end
 end
 
 class Rook < SlidingPiece
-
   def move_dirs
     [[1, 0], [0, 1], [-1, 0], [0, -1]]
   end
@@ -107,10 +113,13 @@ class King < SteppingPiece
   def steps
     [1, -1, 0].repeated_permutation(2).to_a
   end
+
+  def is_king?
+    true
+  end
 end
 
 class Pawn < Piece
-
   ADVANCE_1 = [1,0]
   ADVANCE_2 = [2,0]
   TAKE = [[1,1], [1, -1]]
