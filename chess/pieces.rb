@@ -68,7 +68,12 @@ end
 class SteppingPiece < Piece
 
   def moves
-    raise "not yet implemented"
+    res = []
+    steps.each do |step|
+      next_pos = board.move_pos(pos, step)
+      res << next_pos if board.valid_move?(self, next_pos)
+    end
+    res
   end
 end
 
@@ -87,16 +92,21 @@ class Rook < SlidingPiece
 end
 
 class Queen < SlidingPiece
-
   def move_dirs
     [1, -1].repeated_permutation(2).to_a.concat([[1, 0], [0, 1], [-1, 0], [0, -1]])
   end
 end
 
 class Knight < SteppingPiece
+  def steps
+    [1, -1, 2, -2].repeated_permutation(2).select { |move| move.first.abs != move.last.abs }
+  end
 end
 
 class King < SteppingPiece
+  def steps
+    [1, -1, 0].repeated_permutation(2).to_a
+  end
 end
 
 class Pawn < Piece
