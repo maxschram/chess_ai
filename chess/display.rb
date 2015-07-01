@@ -22,6 +22,7 @@ class Display
   end
 
   def render
+    current_player = game.players[game.current_player]
     system('clear')
     (0...@board.length).each do |row|
       (0...@board.length).each do |col|
@@ -29,7 +30,8 @@ class Display
       end
       print "\n"
     end
-    puts "Use WASD for movement, Enter to select or place a piece, Q for quit"
+    puts "Use WASD for movement, Enter to select or place a piece, Q for quit\n"
+    puts "Current player: #{current_player.color.to_s.upcase.colorize(current_player.color)}".on_green
   end
 
   def debug_console
@@ -39,17 +41,18 @@ class Display
   end
 
   def render_debug(options = {})
+    selected_pos = game.players[game.current_player].selected_pos
     debug_msg = ""
     debug_msg += "Cursor position: #{cursor}\n"
     debug_msg += "Highlighted space position: #{board[cursor].pos}\n"
     debug_msg += "Highlighted space empty?: #{board[cursor].empty?}\n"
-    debug_msg += "Selected position: #{game.selected_pos}\n"
+    debug_msg += "Selected position: #{selected_pos}\n"
     if game.selected_pos
-      debug_msg += "Selected position moves: #{board[game.selected_pos].moves}\n"
+      debug_msg += "Selected position moves: #{board[selected_pos].moves}\n"
     end
     debug_msg += "Piece at highlighted position: #{board[cursor].class}\n" if board[cursor]
     debug_msg += "Highlighted piece color #{board[cursor].color}\n" unless board[cursor].empty?
-    debug_msg += "Piece at selected position: #{board[game.selected_pos].class}\n" if game.selected_pos && board[game.selected_pos]
+    debug_msg += "Piece at selected position: #{board[selected_pos].class}\n" if game.selected_pos && board[game.selected_pos]
     debug_msg += "Black king at #{board.find_king(:black).pos}\n"
     debug_msg += "White king at #{board.find_king(:white).pos}\n"
     debug_msg += "White in check #{board.in_check?(:white)}\n"
@@ -59,6 +62,11 @@ class Display
     puts debug_msg
     debug_console if options[:console]
   end
+
+  def empty_square?(pos)
+    board[pos].empty?
+  end
+
   private
 
   def square_odd?(pos)
@@ -67,7 +75,7 @@ class Display
 
   def square_string(pos)
     piece = board[pos].to_s
-    piece = piece.colorize(:yellow) if game.previously_selected_pos == pos
+    piece = piece.colorize(:yellow) if game.players[game.current_player].selected_pos == pos
     if pos == cursor
       background_color = :yellow
     elsif square_odd?(pos)
@@ -84,5 +92,4 @@ class Display
     return unless board.on_board?(new_cursor_pos)
     @cursor = new_cursor_pos
   end
-
 end
