@@ -82,8 +82,6 @@ class Board
     start_pos = piece.pos
     move(piece.pos, end_pos)
     check = in_check?(piece.color)
-    # place_piece(piece, old_piece_pos)
-    # place_piece(taken_piece, move)
     undo_move(piece, taken_piece, start_pos, end_pos)
     check
   end
@@ -94,11 +92,6 @@ class Board
     self[end_pos] = old_piece
     old_piece.move(end_pos)
   end
-
-  # def make_move(piece, old_piece, start_pos, end_pos)
-  #   self[start_pos] = EmptySquare.new(start_pos)
-  #   old_piece
-  # end
 
   def can_occupy?(piece, pos)
     on_board?(pos) &&

@@ -1,5 +1,4 @@
 class Display
-
   attr_accessor :cursor, :game
   attr_reader :board
 
@@ -22,21 +21,28 @@ class Display
   end
 
   def render
-    board = ''
+    board_str = "\n" + ' ' * 20
     instructions = ''
+    current_player_str = ''
     current_player = game.players[game.current_player]
     system('clear')
     (0...@board.length).each do |row|
       (0...@board.length).each do |col|
-        board << square_string([row, col])
+        board_str << square_string([row, col])
       end
-      board << "\n"
+      board_str << "\n" + " " * 20
     end
     instructions << "\nUse WASD for movement, Enter to select or place a piece, Q for quit\n"
-    instructions << "Current player: #{current_player.color.to_s.upcase.colorize(current_player.color)}".on_green
-    instructions << " " * 46
-    puts board
+    current_player_str << "Current player: #{current_player.color.to_s.upcase.colorize(current_player.color)}".on_green
+    instructions << " " * (instructions.chomp.length - 1)
+    check_message = "    #{current_player.color.to_s.colorize(current_player.color)} is in check!  ".on_red
+    end_game_message = "\n#{game.players[game.current_player].color.to_s.colorize(current_player.color)} is in checkmate. Game over"
+
     puts instructions.colorize(background: :magenta)
+    puts "\n" + current_player_str.rjust(70, ' ')
+    puts board_str
+    print end_game_message.on_red if game.over?
+    print " " * 20 + check_message if game.check?
   end
 
   def debug_console

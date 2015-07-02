@@ -49,9 +49,6 @@ class Piece
     piece_name = self.class.to_s.downcase.to_sym
     PIECE_CODES[piece_name].colorize(color)
   end
-
-  private
-
 end
 
 class SlidingPiece < Piece
@@ -70,6 +67,7 @@ class SlidingPiece < Piece
       res << next_pos
       break if board.valid_take?(self, next_pos)
     end
+
     res
   end
 end

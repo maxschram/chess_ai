@@ -16,12 +16,14 @@ class Game
     @debug = true
     @players = [HumanPlayer.new(:white, display), HumanPlayer.new(:black, display)]
     @current_player = 0
+    @player_in_check = false
+    @over = false
   end
-
 
   def run
     debug_console = false
     until over?
+      update_check_state
       begin
         start_pos, end_pos = players[current_player].take_turn
         try_to_move_piece(start_pos, end_pos)
@@ -32,6 +34,23 @@ class Game
     end
   end
 
+  def over?
+    over
+  end
+
+  def check?
+    player_in_check
+  end
+
+  private
+
+  attr_reader :debug
+  attr_accessor :over, :player_in_check
+
+  def update_check_state
+    self.player_in_check = board.in_check?(players[current_player].color)
+    self.over = board.checkmate?(players[current_player].color)
+  end
 
   def try_to_move_piece(start_pos, end_pos)
     piece = board[start_pos]
@@ -53,13 +72,6 @@ class Game
     self.current_player = 1 - current_player
   end
 
-  def over?
-    false
-  end
-
-  private
-
-  attr_reader :debug
 end
 
 class InvalidMove < StandardError
