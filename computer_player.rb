@@ -1,13 +1,14 @@
 require_relative 'chess_node'
 
 class ComputerPlayer
-  attr_reader :color, :board, :game
+  attr_reader :color, :board, :game, :plies_ahead
   attr_accessor :selected_pos
 
   def initialize(color, board, game)
     @color = color
     @board = board
     @game = game
+    @plies_ahead = 2
   end
 
   def take_turn
@@ -24,7 +25,7 @@ class ComputerPlayer
 
   def next_move
     root = ChessNode.new(nil, board, color, nil)
-    highest_score = alpha_beta(root, 2, -Float::INFINITY, Float::INFINITY, true)
+    highest_score = alpha_beta(root, plies_ahead, -Float::INFINITY, Float::INFINITY, true)
     move = root.search_move(highest_score)
     move
   end
