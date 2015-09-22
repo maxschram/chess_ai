@@ -1,6 +1,7 @@
 class Piece
   attr_reader :color, :board
   attr_accessor :moved, :pos
+  attr_writer :board
 
   PIECE_CODES = {
       king: "\u265A",
@@ -10,11 +11,11 @@ class Piece
       knight: "\u265E",
       pawn: "\u265F"
   }
-  def initialize(pos, board, color)
+  def initialize(pos, board, color, moved = false)
     @pos = pos
     @board = board
     @color = color
-    @moved = false
+    @moved = moved
   end
 
   def valid_move?(pos)
@@ -49,6 +50,10 @@ class Piece
     piece_name = self.class.to_s.downcase.to_sym
     PIECE_CODES[piece_name].colorize(color)
   end
+
+  def dup
+    Piece.new(pos.dup, board, color)
+  end
 end
 
 class SlidingPiece < Piece
@@ -79,6 +84,7 @@ class SteppingPiece < Piece
       next_pos = board.move_pos(pos, step)
       res << next_pos if board.can_occupy?(self, next_pos)
     end
+
     res
   end
 end
@@ -121,6 +127,7 @@ class Pawn < Piece
   ADVANCE_1 = [1,0]
   ADVANCE_2 = [2,0]
   TAKE = [[1,1], [1, -1]]
+
   def moves
     res = []
     move_diffs.each do |move|
@@ -133,6 +140,7 @@ class Pawn < Piece
       next_pos = board.move_pos(pos, move)
       res << next_pos if board.valid_take?(self, next_pos)
     end
+
     res
   end
 

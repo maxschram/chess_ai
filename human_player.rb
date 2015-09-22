@@ -1,5 +1,4 @@
 class HumanPlayer
-
   attr_reader :display, :color
   attr_accessor :previously_selected_pos, :selected_pos
 
@@ -15,7 +14,6 @@ class HumanPlayer
     self.selected_pos = nil
 
     until previously_selected_pos && selected_pos
-      display.render
       # display.render_debug(console: debug_console) if debug
       # display.render_debug
       # debug_console = false
@@ -24,6 +22,7 @@ class HumanPlayer
       # debug_console = true if input == 'c'
       position_selected if input == "\r"
       display.receive_input(input)
+      display.render  
     end
     [previously_selected_pos, selected_pos]
   end

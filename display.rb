@@ -35,14 +35,16 @@ class Display
     instructions << "\nUse WASD for movement, Enter to select or place a piece, Q for quit\n"
     current_player_str << "Current player: #{current_player.color.to_s.upcase.colorize(current_player.color)}".on_green
     instructions << " " * (instructions.chomp.length - 1)
-    check_message = "    #{current_player.color.to_s.colorize(current_player.color)} is in check!  ".on_red
+    current_player_check = "    #{current_player.color.to_s.colorize(current_player.color)} is in check!  ".on_red
+    other_player_check = "    #{board.other_color(game.current_player).to_s.colorize(current_player.color)} is in check!  ".on_red
     end_game_message = "\n#{game.players[game.current_player].color.to_s.colorize(current_player.color)} is in checkmate. Game over"
-
     puts instructions.colorize(background: :magenta)
     puts "\n" + current_player_str.rjust(70, ' ')
     puts board_str
     print end_game_message.on_red if game.over?
-    print " " * 20 + check_message if game.check?
+    print " " * 20 + current_player_check if board.in_check?(current_player.color)
+    print " " * 20 + check_message if board.in_check?(board.other_color(current_player.color))
+    puts "\n" + "Computer is thinking".on_blue.rjust(56, ' ') if current_player.color == :black
   end
 
   def debug_console
@@ -73,6 +75,10 @@ class Display
     puts debug_msg
     debug_console if options[:console]
   end
+
+  string = (<<-STRING)
+    This is the content!!
+  STRING
 
   def empty_square?(pos)
     board[pos].empty?

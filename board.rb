@@ -1,12 +1,13 @@
 require 'byebug'
 
 class Board
-
-  def initialize
+  def initialize(populate = true)
     @grid = Array.new(8) { Array.new(8) }
     populate_squares
-    populate(:white)
-    populate(:black)
+    if populate
+      populate(:white)
+      populate(:black)
+    end
   end
 
   def in_check?(color)
@@ -31,6 +32,10 @@ class Board
     pos.all? {|dim| dim.between?(0, length - 1)}
   end
 
+  def checkmate?(color)
+    total_moves(color).empty?
+  end
+  
   def in_check?(color)
     king = find_king(color)
     king_pos = king.pos
@@ -94,13 +99,10 @@ class Board
   end
 
   def can_occupy?(piece, pos)
-    on_board?(pos) &&
+    pos && on_board?(pos) &&
       (self[pos].empty? || piece.color != self[pos].color)
   end
 
-  def checkmate?(color)
-    total_moves(color).empty?
-  end
 
   def valid_move?(piece, pos)
     can_occupy?(piece, pos) && !move_puts_in_check?(piece, pos)
@@ -116,6 +118,43 @@ class Board
 
   def move_pos(pos, diff)
     pos.zip(diff).map { |dim| dim.reduce(:+) }
+  end
+
+  def deep_dup
+    duped_board = Board.new(false)
+    grid.each_with_index do |row, row_idx|
+      row.each_with_index do |col, col_idx|
+        piece = self[[row_idx, col_idx]]
+        duped_piece = piece.class.new(piece.pos, duped_board, piece.color, piece.moved)
+        duped_board[[row_idx, col_idx]] = duped_piece
+      end
+    end
+    duped_board
+  end
+
+  def isolated_pawn?(pawn)
+    pawns(pawn.color).none? do |other_pawn|
+      pawn.pos.last == other_pawn.pos.last
+    end
+  end
+
+  def doubled_pawn?(pawn)
+    pawns(pawn.color).any? do |other_pawn|
+      pawn.pos.last == other_pawn.pos.last
+    end
+  end
+
+  def pawns(color)
+    all_pieces_of_color(color).select { |piece| piece.is_a?(Pawn) }
+  end
+
+  def blocked_pawn?(pawn)
+    if pawn.color == :white
+      pos = [pawn.pos.first - 1 , pawn.pos.last]
+    else
+      pos = [pawn.pos.first + 1 , pawn.pos.last]
+    end
+    self[pos].color == other_color(pawn.color)
   end
 
   private
@@ -154,16 +193,27 @@ end
 class EmptySquare
   attr_accessor :pos
 
-  def initialize(pos)
+  def initialize(pos, *args)
     @pos = pos
+  end
+
+  def board=(*args)
   end
 
   def moves
     []
   end
 
+  def color
+    :COLORLESS
+  end
+
   def empty?
     true
+  end
+
+  def moved
+    false
   end
 
   def inspect

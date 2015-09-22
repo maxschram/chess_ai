@@ -2,6 +2,7 @@ require_relative 'display'
 require_relative 'board'
 require_relative 'pieces'
 require_relative 'human_player'
+require_relative 'computer_player'
 require 'colorize'
 require 'io/console'
 require 'byebug'
@@ -14,7 +15,7 @@ class Game
     @board = Board.new
     @display = Display.new(@board, self)
     @debug = true
-    @players = [HumanPlayer.new(:white, display), HumanPlayer.new(:black, display)]
+    @players = [HumanPlayer.new(:white, display), ComputerPlayer.new(:black, board, self)]
     @current_player = 0
     @player_in_check = false
     @over = false
@@ -22,6 +23,7 @@ class Game
 
   def run
     debug_console = false
+    display.render
     until over?
       update_check_state
       begin
@@ -31,6 +33,7 @@ class Game
         retry
       end
       switch_players
+      display.render
     end
   end
 
@@ -71,7 +74,6 @@ class Game
   def switch_players
     self.current_player = 1 - current_player
   end
-
 end
 
 class InvalidMove < StandardError
